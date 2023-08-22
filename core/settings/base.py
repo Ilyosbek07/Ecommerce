@@ -47,9 +47,11 @@ DJANGO_APPS = [
 ]
 
 CUSTOM_APPS = [
+    "apps.cart",
     "apps.common",
-    "apps.users",
+    "apps.company",
     "apps.products",
+    "apps.users",
 ]
 
 THIRD_PARTY_APPS = [

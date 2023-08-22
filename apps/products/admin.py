@@ -6,7 +6,7 @@ from apps.products.models import (
     Category,
     WholeSale,
     Image,
-    Features,
+    Feature,
     Brand
 )
 
@@ -36,12 +36,12 @@ class BrandAdmin(admin.ModelAdmin):
 admin.site.register(Brand, BrandAdmin)
 
 
-class FeaturesAdmin(admin.ModelAdmin):
+class FeatureAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
 
 
-admin.site.register(Features, FeaturesAdmin)
+admin.site.register(Feature, FeatureAdmin)
 
 
 class ExtraInfoAdmin(admin.ModelAdmin):
@@ -69,10 +69,11 @@ admin.site.register(WholeSale, WholeSaleAdmin)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'brand', 'company', 'price', 'discount', 'discount_expire_date')
-    list_filter = ('category', 'brand', 'company', 'features', 'whole_sale')
-    search_fields = ('name', 'price')
+    list_display = ('name', 'category', 'brand', 'discount', 'discount_expire_date')
+    list_filter = ('category', 'brand', 'features', 'whole_sale')
+    search_fields = ('name',)
     filter_horizontal = ('image', 'features', 'whole_sale', 'extra_info')
+    readonly_fields = ('sold',)
 
 
 admin.site.register(Product, ProductAdmin)

@@ -95,3 +95,4 @@ class User(AbstractUser, BaseModel):
         if not password.isascii():
             return False
         return True
+

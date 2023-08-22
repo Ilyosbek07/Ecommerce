@@ -12,19 +12,21 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='SendQuote',
+            name='Cart',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('item', models.CharField(max_length=125)),
-                ('desc', models.TextField()),
-                ('quantity', models.DecimalField(decimal_places=2, default=0, max_digits=1000)),
-                ('quantity_type', models.CharField(choices=[('Kg', 'KG'), ('Psc', 'PSG'), ('Liter', 'LITER')], max_length=15)),
+                ('name', models.CharField(max_length=255)),
+                ('decs', models.TextField()),
+                ('price', models.DecimalField(decimal_places=2, default=0, max_digits=1000)),
+                ('image', models.ImageField(upload_to='cart')),
+                ('quality', models.IntegerField()),
+                ('is_temporary', models.BooleanField(default=False)),
             ],
             options={
-                'verbose_name': 'SendQuote',
-                'verbose_name_plural': 'SendQuotes',
+                'verbose_name': 'Cart',
+                'verbose_name_plural': 'Carts',
             },
         ),
     ]

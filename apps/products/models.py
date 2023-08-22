@@ -2,8 +2,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.common.models import BaseModel, Company
+from apps.common.models import BaseModel
 from apps.products.choices import CURRENCY
+from apps.company.models import CompanyProfile
 
 
 class MainCategory(BaseModel):
@@ -12,6 +13,10 @@ class MainCategory(BaseModel):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = _('MainCategory')
+        verbose_name_plural = _('MainCategories')
 
 
 class Category(BaseModel):
@@ -27,6 +32,10 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _('Category')
+        verbose_name_plural = _('Categories')
+
 
 class Brand(BaseModel):
     name = models.CharField(max_length=125)
@@ -34,12 +43,20 @@ class Brand(BaseModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _('Brand')
+        verbose_name_plural = _('Brands')
 
-class Features(BaseModel):
+
+class Feature(BaseModel):
     name = models.CharField(max_length=125)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = _('Feature')
+        verbose_name_plural = _('Features')
 
 
 class ExtraInfo(BaseModel):
@@ -49,6 +66,10 @@ class ExtraInfo(BaseModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = _('ExtraInfo')
+        verbose_name_plural = _('ExtraInfo')
+
 
 class Image(BaseModel):
     image = models.ImageField(upload_to='product')
@@ -57,14 +78,22 @@ class Image(BaseModel):
     def __str__(self):
         return f'Product {self.pk} image'
 
+    class Meta:
+        verbose_name = _('Image')
+        verbose_name_plural = _('Images')
+
 
 class WholeSale(BaseModel):
     product_from = models.IntegerField()
     product_to = models.IntegerField()
-    price = models.IntegerField()
+    price = models.DecimalField(decimal_places=2, max_digits=1000)
 
     def __str__(self):
         return f'WholeSale {self.product_from} - {self.product_to}'
+
+    class Meta:
+        verbose_name = _('WholeSale')
+        verbose_name_plural = _('WholeSales')
 
 
 class Product(BaseModel):
@@ -78,17 +107,17 @@ class Product(BaseModel):
         on_delete=models.CASCADE,
         related_name='brand'
     )
-    company = models.ForeignKey(
-        Company,
+    CompanyProfile = models.ForeignKey(
+        CompanyProfile,
         on_delete=models.CASCADE,
-        related_name='company_prod'
+        related_name='CompanyProfile_prod'
     )
     image = models.ManyToManyField(
         Image,
         related_name='prod_image'
     )
     features = models.ManyToManyField(
-        Features,
+        Feature,
         related_name='features'
     )
     whole_sale = models.ManyToManyField(
@@ -100,7 +129,7 @@ class Product(BaseModel):
         related_name='extra_info'
     )
     name = models.CharField(max_length=55)
-    price = models.IntegerField(default=0)
+    price = models.DecimalField(decimal_places=2, max_digits=1000)
     discount = models.PositiveIntegerField(
         default=0,
         validators=[
@@ -109,5 +138,11 @@ class Product(BaseModel):
         ]
     )
     discount_expire_date = models.DateTimeField()
-    currency = models.CharField(max_length=11, choices=CURRENCY.choices,default=CURRENCY.UZB)
+    currency = models.CharField(max_length=11, choices=CURRENCY.choices, default=CURRENCY.UZB)
     is_shipping_free = models.BooleanField(default=False)
+    sold = models.IntegerField(null=True, blank=True)
+    amount = models.IntegerField(null=False)
+
+    class Meta:
+        verbose_name = _('Product')
+        verbose_name_plural = _('Products')
