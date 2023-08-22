@@ -6,3 +6,5 @@ class BothHttpAndHttpsSchemaGenerator(OpenAPISchemaGenerator):
         schema = super().get_schema(request, public)
         schema.schemes = ["http", "https"]
         return schema
+nums = [1212,212,32]
+a = enumerate(nums)
