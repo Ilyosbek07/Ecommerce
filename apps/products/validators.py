@@ -8,8 +8,7 @@ now = datetime.now(tz=ZoneInfo(f"{base.TIME_ZONE}"))
 
 
 def validate_rebate_time(value):
-    if value.until_time <= now:
-        print('aaa')
+    if value <= now:
         raise ValidationError(
-            "Error"
+            "Until time must be greater than current time"
         )
