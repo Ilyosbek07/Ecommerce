@@ -24,3 +24,19 @@ class Cart(BaseModel):
     class Meta:
         verbose_name = _('Cart')
         verbose_name_plural = _('Carts')
+
+
+class Order(BaseModel):
+    user = models.ForeignKey(
+        User,
+        related_name='user_order',
+        on_delete=models.CASCADE
+    )
+    cart = models.ForeignKey(
+        Cart,
+        related_name='cart',
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return f'Order {self.pk}'

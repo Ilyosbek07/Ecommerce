@@ -5,6 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from apps.common.models import BaseModel
 from apps.products.choices import CURRENCY
 from apps.company.models import CompanyProfile
+from apps.products.validators import validate_rebate_time
+from apps.users.models import User
 
 
 class MainCategory(BaseModel):
@@ -24,6 +26,13 @@ class Category(BaseModel):
         MainCategory,
         on_delete=models.CASCADE,
         related_name='main_category'
+    )
+    sub_category = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        related_name='extra_category',
+        null=True,
+        blank=True
     )
 
     name = models.CharField(max_length=125)
@@ -83,19 +92,6 @@ class Image(BaseModel):
         verbose_name_plural = _('Images')
 
 
-class WholeSale(BaseModel):
-    product_from = models.IntegerField()
-    product_to = models.IntegerField()
-    price = models.DecimalField(decimal_places=2, max_digits=1000)
-
-    def __str__(self):
-        return f'WholeSale {self.product_from} - {self.product_to}'
-
-    class Meta:
-        verbose_name = _('WholeSale')
-        verbose_name_plural = _('WholeSales')
-
-
 class Product(BaseModel):
     category = models.ForeignKey(
         Category,
@@ -107,7 +103,7 @@ class Product(BaseModel):
         on_delete=models.CASCADE,
         related_name='brand'
     )
-    CompanyProfile = models.ForeignKey(
+    company_profile = models.ForeignKey(
         CompanyProfile,
         on_delete=models.CASCADE,
         related_name='CompanyProfile_prod'
@@ -120,29 +116,115 @@ class Product(BaseModel):
         Feature,
         related_name='features'
     )
-    whole_sale = models.ManyToManyField(
-        WholeSale,
-        related_name='whole_sale'
-    )
     extra_info = models.ManyToManyField(
         ExtraInfo,
         related_name='extra_info'
     )
     name = models.CharField(max_length=55)
-    price = models.DecimalField(decimal_places=2, max_digits=1000)
-    discount = models.PositiveIntegerField(
-        default=0,
-        validators=[
-            MinValueValidator(0),
-            MaxValueValidator(100)
-        ]
-    )
-    discount_expire_date = models.DateTimeField()
-    currency = models.CharField(max_length=11, choices=CURRENCY.choices, default=CURRENCY.UZB)
     is_shipping_free = models.BooleanField(default=False)
-    sold = models.IntegerField(null=True, blank=True)
-    amount = models.IntegerField(null=False)
 
     class Meta:
         verbose_name = _('Product')
         verbose_name_plural = _('Products')
+
+
+class WholeSale(BaseModel):
+    product = models.ForeignKey(
+        Product,
+        related_name='product_extra_info',
+        on_delete=models.CASCADE
+    )
+    product_from = models.IntegerField()
+    product_to = models.IntegerField()
+    price = models.DecimalField(max_digits=18, decimal_places=2, validators=[MinValueValidator(0)])
+    is_main = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'WholeSale {self.product_from} - {self.product_to}'
+
+    class Meta:
+        verbose_name = _('WholeSale')
+        verbose_name_plural = _('WholeSales')
+
+
+class ProductColor(BaseModel):
+    name = models.CharField(max_length=125)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = _("Product Color")
+        verbose_name_plural = _("Products Colors")
+
+
+class ProductType(BaseModel):
+    product = models.ForeignKey(
+        to="Product", on_delete=models.CASCADE, related_name="stock"
+    )
+    color = models.ForeignKey(
+        to="ProductColor",
+        on_delete=models.SET_NULL,
+        related_name="product_stocks",
+        null=True,
+        blank=True,
+    )
+    price = models.DecimalField(
+        _("Narx"), max_digits=18, decimal_places=2, validators=[MinValueValidator(0)]
+    )
+    sale_price = models.DecimalField(
+        _("Chegirma narxi"), max_digits=18, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)]
+    )
+    currency = models.CharField(max_length=11, choices=CURRENCY.choices, default=CURRENCY.UZB)
+    in_stock = models.PositiveIntegerField(_("Mahsulot soni"), default=0)
+
+    class Meta:
+        verbose_name = _("Product type")
+        verbose_name_plural = _("Products type")
+
+
+class Review(BaseModel):
+    user = models.ForeignKey(
+        User,
+        related_name='user_review',
+        on_delete=models.CASCADE
+    )
+    product = models.ForeignKey(
+        Product,
+        related_name='product_review',
+        on_delete=models.CASCADE
+    )
+    rating = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(5)
+        ]
+    )
+    msg = models.TextField()
+
+    def __str__(self):
+        return self.user.first_name
+
+    class Meta:
+        verbose_name = 'Review'
+        verbose_name_plural = 'Reviews'
+
+
+class Rebate(BaseModel):
+    category = models.ForeignKey(
+        Category,
+        related_name='rebate_category',
+        on_delete=models.CASCADE
+    )
+    discount_percent = models.IntegerField(validators=[
+        MinValueValidator(1),
+        MaxValueValidator(100)
+    ])
+    until_time = models.DateTimeField(validators=[validate_rebate_time])
+
+    def __str__(self):
+        return f'Rebase {self.pk}'
+
+    class Meta:
+        verbose_name = 'Rebate'
+        verbose_name_plural = 'Rebates'

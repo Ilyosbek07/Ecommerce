@@ -24,7 +24,7 @@ class CompanyProfile(BaseModel):
         related_name='company_user',
         on_delete=models.CASCADE
     )
-    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, related_name='country', null=True)
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to='logo')
     shipping_place = models.CharField(

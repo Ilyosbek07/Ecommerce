@@ -2,7 +2,7 @@ from django.contrib.auth.hashers import make_password
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import UserManager as AbastractUserManager, AbstractUser
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinValueValidator, MaxValueValidator
 from django.utils.translation import gettext_lazy as _
 
 from apps.common.models import BaseModel
@@ -51,7 +51,8 @@ class User(AbstractUser, BaseModel):
         validators=(phone_regex_validator,),
     )
     email = models.EmailField(verbose_name=_("Email"), null=True, blank=True)
-
+    first_name = models.CharField(max_length=125)
+    image = models.ImageField(upload_to='user')
     """
     password_set:
         We set this to False when user is registered with social auth.  Because we don't get password in social auth.
@@ -95,4 +96,5 @@ class User(AbstractUser, BaseModel):
         if not password.isascii():
             return False
         return True
+
 

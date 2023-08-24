@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from apps.company.models import Country, CompanyProfile, CompanyVerification
+
+admin.site.register(Country)
+admin.site.register(CompanyProfile)
+admin.site.register(CompanyVerification)

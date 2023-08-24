@@ -7,8 +7,13 @@ from apps.products.models import (
     WholeSale,
     Image,
     Feature,
-    Brand
+    Brand, ProductType, ProductColor, Review, Rebate
 )
+
+admin.site.register(Rebate)
+admin.site.register(ProductType)
+admin.site.register(ProductColor)
+admin.site.register(Review)
 
 
 class MainCategoryAdmin(admin.ModelAdmin):
@@ -69,11 +74,11 @@ admin.site.register(WholeSale, WholeSaleAdmin)
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'brand', 'discount', 'discount_expire_date')
-    list_filter = ('category', 'brand', 'features', 'whole_sale')
+    list_display = ('name', 'category', 'brand')
+    list_filter = ('category', 'brand', 'features')
     search_fields = ('name',)
-    filter_horizontal = ('image', 'features', 'whole_sale', 'extra_info')
-    readonly_fields = ('sold',)
+    filter_horizontal = ('image', 'features', 'extra_info')
+    # readonly_fields = ('sold',)
 
 
 admin.site.register(Product, ProductAdmin)

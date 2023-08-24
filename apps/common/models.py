@@ -24,3 +24,18 @@ class SendQuote(BaseModel):
     class Meta:
         verbose_name = _('SendQuote')
         verbose_name_plural = _('SendQuotes')
+
+
+class Banner(BaseModel):
+    title = models.CharField(max_length=125)
+    image = models.ImageField(upload_to='banner')
+    description = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Banner'
+        verbose_name_plural = 'Banners'
+
+
