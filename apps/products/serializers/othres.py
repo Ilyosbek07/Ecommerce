@@ -91,14 +91,6 @@ class RebateSerializer(serializers.ModelSerializer):
             'created_at'
         )
 
-    def validate(self, data):
-        """
-        Check that start is before finish.
-        """
-        if data['until_time'] > data['created_at']:
-            raise serializers.ValidationError("finish must occur after start")
-        return data
-
     def get_duration(self, obj):
         duration = obj.until_time - obj.created_at
         return duration

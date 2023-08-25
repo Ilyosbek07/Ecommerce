@@ -211,10 +211,9 @@ class Review(BaseModel):
 
 
 class Rebate(BaseModel):
-    category = models.ForeignKey(
+    category = models.ManyToManyField(
         Category,
         related_name='rebate_category',
-        on_delete=models.CASCADE
     )
     discount_percent = models.IntegerField(validators=[
         MinValueValidator(1),
